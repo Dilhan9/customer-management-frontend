@@ -9,43 +9,76 @@ export default function CustomerList() {
 
   useEffect(() => {
     getCustomers(page).then(res => {
-      setCustomers(res.data.content);
-      setTotalPages(res.data.totalPages);
+      setCustomers(res.data.content || []);
+      setTotalPages(res.data.totalPages || 1);
     });
   }, [page]);
 
   return (
     <div>
-      <Table striped bordered hover>
+      <h2 className="mb-4">Customer List</h2>
+      
+      <Table striped bordered hover responsive>
         <thead>
           <tr>
             <th>Name</th>
             <th>NIC</th>
             <th>Date of Birth</th>
+            <th>Mobile Numbers</th>
+            <th>Addresses</th>
           </tr>
         </thead>
         <tbody>
-          {customers.map(customer => (
-            <tr key={customer.id}>
-              <td>{customer.name}</td>
-              <td>{customer.nic}</td>
-              <td>{customer.dob}</td>
+          {customers.length === 0 ? (
+            <tr>
+              <td colSpan="5" className="text-center text-muted">
+                No customers found
+              </td>
             </tr>
-          ))}
+          ) : (
+            customers.map(customer => (
+              <tr key={customer.id}>
+                <td>{customer.name}</td>
+                <td>{customer.nic}</td>
+                <td>{new Date(customer.dob).toLocaleDateString()}</td>
+                <td>
+                  {customer.mobileNumbers?.length > 0 
+                    ? customer.mobileNumbers.join(', ')
+                    : '-'}
+                </td>
+                <td>
+                  {customer.addresses?.length > 0 ? (
+                    <ul className="list-unstyled mb-0">
+                      {customer.addresses.map((address, index) => (
+                        <li key={index} className="mb-1">
+                          {address.addressLine1}
+                          {address.addressLine2 && `, ${address.addressLine2}`}
+                          {address.city && `, ${address.city}`}
+                          {address.country && `, ${address.country}`}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : '-'}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
-      
-      <Pagination>
-        {[...Array(totalPages).keys()].map(number => (
-          <Pagination.Item 
-            key={number} 
-            active={number === page}
-            onClick={() => setPage(number)}
-          >
-            {number + 1}
-          </Pagination.Item>
-        ))}
-      </Pagination>
+
+      {totalPages > 1 && (
+        <Pagination className="justify-content-center">
+          {[...Array(totalPages).keys()].map(number => (
+            <Pagination.Item
+              key={number}
+              active={number === page}
+              onClick={() => setPage(number)}
+            >
+              {number + 1}
+            </Pagination.Item>
+          ))}
+        </Pagination>
+      )}
     </div>
   );
 }
