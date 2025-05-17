@@ -66,19 +66,18 @@ export default function CustomerList() {
         </tbody>
       </Table>
 
-      {totalPages > 1 && (
-        <Pagination className="justify-content-center">
-          {[...Array(totalPages).keys()].map(number => (
-            <Pagination.Item
-              key={number}
-              active={number === page}
-              onClick={() => setPage(number)}
-            >
-              {number + 1}
-            </Pagination.Item>
-          ))}
-        </Pagination>
-      )}
+      <Pagination>
+     {[...Array(totalPages).keys()].map(number => (
+     <Pagination.Item 
+      key={number} 
+      active={number === page}
+      onClick={() => setPage(number)}
+    >
+      {number + 1}
+    </Pagination.Item>
+    ))}
+</Pagination>
+
     </div>
   );
 }
